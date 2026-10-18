@@ -212,7 +212,7 @@ def separate_table(rows: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(out)
 
 
-INTERACTION_LABELS = {"summe": "Summe, richtige Gewichte", "anpassung": "beste additive Anpassung", "choquet": "Choquet, richtige Wechselwirkung", "halb": "Choquet, halbe Stärke",
+INTERACTION_LABELS = {"summe": "Summe, richtige Gewichte", "anpassung": "additive Kleinste-Quadrate-Anpassung", "choquet": "Choquet, richtige Wechselwirkung", "halb": "Choquet, halbe Stärke",
                       "falsch": "Choquet, falsches Vorzeichen"}
 
 

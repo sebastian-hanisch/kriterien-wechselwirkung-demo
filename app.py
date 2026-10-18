@@ -235,7 +235,7 @@ else:
                f"({'die richtigen Gewichte treffen' if R_R.hit else 'beide verfehlen'}). Der große Aspekt ist {de(infl_er, 2)}-fach gewichtet.")
 if settings.decider in ("redundanz", "synergie"):
     st.caption(f"Bei Wechselwirkung trifft die Summe mit richtigen Gewichten {'Platz 1' if R_R.hit else 'Platz 1 nicht'}, das Choquet-Integral "
-               f"{'trifft' if R_C.hit else 'verfehlt ihn ebenfalls'}; keine Wahl der Gewichte ersetzt die Wechselwirkung (Experiment 3).")
+               f"{'trifft' if R_C.hit else 'verfehlt ihn ebenfalls'}; die Summe mit den richtigen Gewichten ersetzt die Wechselwirkung nicht (Experiment 3).")
 
 st.markdown("---")
 
@@ -243,7 +243,7 @@ st.markdown("---")
 
 st.subheader("🔬 Die vier Experimente")
 st.caption("200 feste Matrizen (SWEEP_SEEDS), n = 20, unabhängig von den Reglern. Die Experimente rechnen zusammen rund 10 Sekunden und starten erst auf Klick. Standardfehler der "
-           "Trefferquoten 2,5 bis 3,5 Punkte: Unterschiede unter etwa 6 Punkten sind nicht belastbar.")
+           "Trefferquoten etwa 2 bis 3,5 Punkte: Unterschiede unter etwa 6 Punkten sind nicht belastbar.")
 if st.button("▶ Experimente rechnen", key="exp_start"):
     st.session_state["exp_rows"] = _experiments()
 exp = st.session_state.get("exp_rows")

@@ -64,8 +64,8 @@ PRESETS = {
 }
 PRESET_HELP = {
     "Standardfall ((3, 2, 1), Korrelation 0,6)": "12 Alternativen, 6 Kriterien in Aspekten mit 3, 2 und 1 Kriterien, Korrelation 0,6 im Aspekt; der Entscheider denkt in Aspekten, die Wichtigkeit wird je Kriterium erfragt.",
-    "Zählt dreifach": "Ein Aspekt mit vier Kriterien (Korrelation 0,9), Wichtigkeit je Kriterium erfragt: Der Aspekt zählt vierfach, die erhobene Summe verfehlt den Besten, die richtig geteilte trifft.",
+    "Zählt dreifach": "Ein Aspekt mit vier Kriterien (Korrelation 0,9), Wichtigkeit je Kriterium erfragt: Der Aspekt zählt gut dreifach (Aufblähung 3,1), die erhobene Summe verfehlt den Besten, die richtig geteilte trifft.",
     "CRITIC hilft": "Derselbe Fall: Der CRITIC-Faktor nimmt dem korrelierten Aspekt einen Teil des Übergewichts und trifft den Besten, den die erhobene Summe verfehlt.",
-    "Redundanz": "Im Aspekt zählt das Beste: Keine gewichtete Summe trifft, das Choquet-Integral mit der richtigen Wechselwirkung trifft.",
-    "Synergie": "Im Aspekt zählt das Schlechteste: Die gewichtete Summe verfehlt, das Choquet-Integral mit der richtigen Wechselwirkung trifft (auf gemeinsamer Skala).",
+    "Redundanz": "Im Aspekt zählt das Beste: Alle angezeigten Summen verfehlen, das Choquet-Integral mit der richtigen Wechselwirkung trifft.",
+    "Synergie": "Im Aspekt zählt das Schlechteste: Die Summe mit richtigen Gewichten verfehlt, das Choquet-Integral mit der richtigen Wechselwirkung trifft (auf gemeinsamer Skala).",
 }

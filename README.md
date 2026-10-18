@@ -19,16 +19,17 @@ was korrigieren die datengetriebenen Gewichte davon, und wann reicht eine gewich
 ## Befunde und Korrekturen gegenüber dem Plan
 
 - **„Zwei korrelierte Kriterien zählen doppelt“ stimmt nur bei ungleich vielen Kriterien je Aspekt.** Bei gleich großen Aspekten ist die Erhebung je Kriterium richtig (Kontrolle: gleiche
-  Gewichte). Die Aufblähung ist die Zahl der Kriterien durch die mittlere Aspektgröße (1,50 bei (3, 2, 1), 2,00 bei (4, 1, 1)); sie hängt nicht an der Korrelation.
+  Gewichte). Bei gleichen Aspektgewichten ist die Aufblähung eines Aspekts seine Größe durch die mittlere Aspektgröße (1,50 bei (3, 2, 1), 2,00 bei (4, 1, 1)); sie hängt nicht an der Korrelation.
 - **Das ist eine Annahme, keine Messung:** Dass der Entscheider in Aspekten denkt und die Erhebung je Kriterium die Aspekt-Wichtigkeit für jedes Kriterium vergibt, ist modelliert. Die Aussage
   ist „wenn, dann so viel“.
 - **Entropie-Gewichte sind keine Gegenmaßnahme.** Sie messen die Streuung der Anteile einer Spalte, nicht die Korrelation (Aufblähung 1,95 bei Korrelation 0,9), und auf Perzentil-Rängen sind
   sie praktisch gleich.
 - **CRITIC korrigiert nur teilweise** und mischt Streuung (abhängig von der Normierung) mit Korrelation: bei Korrelation 0,9 von 2,00 auf 1,49. Die Gruppierung aus den Daten korrigiert fast
-  vollständig (1,03), aber erst bei hoher Korrelation; darunter ist die Doppelzählung in den Daten unsichtbar.
-- **Korrelation ist nicht Redundanz.** Bewertet der Entscheider korrelierte Kriterien einzeln und hoch, kostet die CRITIC-Korrektur bis zu 7,5 Punkte Trefferquote.
-- **Choquet ist kein Gewinn an sich.** Bei Redundanz trifft die beste additive Anpassung Platz 1 in 39,5 %, das Choquet-Integral in 68,5 %; mit falschem Vorzeichen ist es bis zu 40 Punkte
-  schlechter als die Summe. Bei Synergie zeigt sich der Vorteil nur auf einer gemeinsamen Skala (Perzentil-Ränge).
+  vollständig (1,03), aber erst bei hoher Korrelation; bei Korrelation 0 bis 0,3 (Schwelle 0,5) bleibt die Doppelzählung in den Daten unsichtbar (2,00 / 1,84), bei 0,6 ist sie teilweise sichtbar (1,24).
+- **Korrelation ist nicht Redundanz.** Bewertet der Entscheider die Kriterien einzeln, kostet der CRITIC-Faktor bei Korrelation 0 sieben bis acht Punkte (7,5), bei Korrelation 0,6 und 0,9 nur 1,5 und 3,5 Punkte, im Rauschen.
+- **Choquet ist kein Gewinn an sich.** Bei reinem Maximum im Aspekt und unabhängigen Kriterien trifft das Choquet-Integral mit der richtigen Kapazität Platz 1 in 68,5 %, die Summe mit richtigen
+  Gewichten in 36,0 % (eine Kleinste-Quadrate-Anpassung in 39,5 %); mit falschem Vorzeichen ist es bei Synergie 40 bis 46 Punkte schlechter als die Summe (Stärke 1). Bei Synergie zeigt sich ein
+  Vorteil (7 Punkte bei reinem Minimum) nur auf einer gemeinsamen Skala (Perzentil-Ränge); bei geringerer Stärke ist er nicht belastbar.
 - **Der Preis des Choquet:** 21 Parameter der 2-additiven Kapazität bei 6 Kriterien (volle Kapazität 62) statt 6 Gewichten, dazu die gemeinsame Skala.
 - **Die Experimente starten auf Klick** (rund 10 Sekunden), nicht beim Laden.
 
@@ -52,7 +53,7 @@ Formeln im 📐-Expander der App.
 
 ## Befunde (gemessen, keine Behauptungen)
 
-Alle Zahlen: `tests/test_claims.py`. 200 feste Matrizen, n = 20, Entscheider denkt in Aspekten. **Der Standardfehler einer Trefferquote ist 2,5 bis 3,5 Punkte; Unterschiede unter etwa
+Fast alle Zahlen: `tests/test_claims.py` (die Zeile zu den datengetriebenen Verfahren ist nur gegen eine Schranke geprüft). 200 feste Matrizen, n = 20, Entscheider denkt in Aspekten. **Der Standardfehler einer Trefferquote ist 2 bis 3,5 Punkte; Unterschiede unter etwa
 6 Punkten sind nicht belastbar und stehen nicht als Aussage.**
 
 | Frage | Befund | Test |
@@ -62,10 +63,10 @@ Alle Zahlen: `tests/test_claims.py`. 200 feste Matrizen, n = 20, Entscheider den
 | Aufblähung des großen Aspekts (Anteil im Verfahren / richtiger Anteil) | gleich je Kriterium **1,50 bei (3, 2, 1), 2,00 bei (4, 1, 1)**. Bei (4, 1, 1) und Korrelation 0 / 0,3 / 0,6 / 0,9: CRITIC 1,99 / 1,87 / 1,71 / **1,49**, Entropie 1,97 / 1,96 / 1,96 / **1,95**, Gruppen 2,00 / 1,84 / 1,24 / **1,03**; bei (3, 2, 1): CRITIC 1,51 / 1,45 / 1,37 / 1,27, Gruppen 1,49 / 1,42 / 1,08 / 1,01. | `test_inflation_of_equal_weights_is_the_size_over_the_mean_size`, `test_critic_corrects_only_partly_entropy_not_at_all` |
 | Erhoben mal CRITIC-Faktor ((4, 1, 1); Korrelation 0 / 0,3 / 0,6 / 0,9) | 52,5 / 63,0 / 69,0 / **80,5 %** gegen erhoben 53,5 / 59,5 / 65,5 / 67,5 %: hilft erst bei hoher Korrelation. | `test_critic_factor_helps_only_at_high_correlation` |
 | Datengetriebene Verfahren ohne Wichtigkeitsangaben | CRITIC, Entropie und Gruppen sind nicht besser als gleiche Gewichte je Kriterium (z. B. (3, 2, 1), Korrelation 0,6: 41,5 / 38,0 / 42,0 % gegen 42,5 %). | `test_data_driven_methods_are_not_better_than_equal_weights` |
-| Sagen die Gewichte etwas über die Wichtigkeit? | Korrelation der CRITIC-Gewichte mit den wahren Kriteriengewichten höchstens 0,06, der Entropie-Gewichte höchstens 0,03 (Betrag); Entropie-Gewichte auf Perzentil-Rängen: Spannweite unter 0,001. | `test_data_driven_weights_say_nothing_about_importance` |
+| Sagen die Gewichte etwas über die Wichtigkeit? | In der Simulation sind die wahren Gewichte von den Daten unabhängig; entsprechend korrelieren CRITIC- und Entropie-Gewichte nicht mit ihnen (Mittel höchstens 0,05 bzw. 0,03; Betrag). Über reale Daten sagt das nichts. Entropie-Gewichte auf Perzentil-Rängen: Spannweite im Mittel unter 0,001. | `test_data_driven_weights_say_nothing_about_importance` |
 | Korrelation ohne Redundanz (jedes Kriterium für sich; 60 % der Gewichte auf den drei korrelierten; Korrelation 0 / 0,6 / 0,9) | wahre Gewichte 81,5 / 82,5 / 85,5 % gegen wahre mal CRITIC 74,0 / 81,0 / 82,0 %: **bis 7,5 Punkte Verlust**. Zufällige Gewichte: wahre 76,0 / 75,0 / 77,0 / 83,5 % (Korrelation 0 / 0,3 / 0,6 / 0,9). | `test_correlation_is_not_redundancy` |
 | Redundanz (Aspekte (2, 2, 2), Korrelation 0, Min-Max; Stärke 0 / 0,25 / 0,5 / 0,75 / 1) | Summe 79,5 / 77,5 / 66,0 / 54,0 / 36,5 %; **Choquet 79,5 / 78,5 / 75,0 / 68,0 / 63,5 %**; halbe Stärke 79,5 / 78,0 / 70,5 / 60,0 / 46,0 %; **falsches Vorzeichen 79,5 / 71,5 / 56,5 / 42,5 / 26,5 %**. | `test_redundancy_on_minmax` |
-| Redundanz auf Perzentil-Rängen; beste additive Anpassung | Summe 77,0 / 75,5 / 67,0 / 52,0 / 36,0 %; Choquet 77,0 / 76,5 / 75,0 / 72,0 / **68,5 %**; **beste additive Anpassung 77,0 / 72,0 / 65,0 / 51,5 / 39,5 %**. | `test_redundancy_on_percentile_ranks_and_the_best_additive_fit` |
+| Redundanz auf Perzentil-Rängen; Kleinste-Quadrate-Anpassung | Summe 77,0 / 75,5 / 67,0 / 52,0 / 36,0 %; Choquet 77,0 / 76,5 / 75,0 / 72,0 / **68,5 %**; **Kleinste-Quadrate-Anpassung 77,0 / 72,0 / 65,0 / 51,5 / 39,5 %**. | `test_redundancy_on_percentile_ranks_and_the_best_additive_fit` |
 | Synergie: Min-Max gegen Perzentil-Ränge | Min-Max: Summe 79,5 / 76,5 / 74,0 / 71,0 / 67,5 %, Choquet 79,5 / 73,0 / 70,5 / 68,5 / 65,0 % (kein Vorteil), falsches Vorzeichen 79,5 / 74,5 / 62,5 / 47,0 / **27,0 %**. Perzentil: Summe 77,0 / 77,5 / 73,5 / 71,5 / 69,0 %, **Choquet 77,0 / 77,5 / 76,0 / 76,5 / 76,0 %**. | `test_synergy_has_no_advantage_on_minmax_but_on_a_common_scale` |
 | Wie oft reicht die Summe? Gleicher Platz 1 von Summe und Choquet (Perzentil; Stärke 0 / 0,25 / 0,5 / 0,75 / 1) | Redundanz 100 / 88,0 / **73,5** / 53,0 / 33,5 %; Synergie 100 / 89,5 / 84,5 / 81,5 / 76,0 %. | `test_how_often_the_sum_is_enough` |
 | Korrelation und Wechselwirkung (Redundanz, Stärke 1, Perzentil; Korrelation −0,4 / 0 / 0,3 / 0,6 / 0,9) | Summe 17,0 / 36,0 / 46,0 / 58,0 / 72,0 %, Choquet 65,5 / 68,5 / 72,0 / 72,0 / 75,0 %, **Abstand 48,5 / 32,5 / 26,0 / 14,0 / 3,0 Punkte**. | `test_the_advantage_of_choquet_shrinks_with_correlation` |
@@ -92,7 +93,7 @@ Alle Zahlen: `tests/test_claims.py`. 200 feste Matrizen, n = 20, Entscheider den
   Nutzen ist das Choquet-Integral der Aspekt-Kapazität.
 - **Randfälle** (`tests/test_edge_cases.py`): n = 1 und n = 2, konstante Spalten, identische Alternativen, ein Kriterium je Aspekt, inklusive Gruppierungsschwelle, Perzentil bei n = 2.
 - **Generator** (`tests/test_generator.py`): SplitMix64 gegen unabhängige Python-Fassung, Randverteilung, Spearman-Korrelation der Copula, Richtungen und Bereiche.
-- **Aussagen:** jede Zahl dieser README in `tests/test_claims.py`; Presets in `test_presets.py` (jedes zeigt seinen Effekt).
+- **Aussagen:** fast jede Zahl dieser README in `tests/test_claims.py` (Ausnahmen siehe Befunde); Presets in `test_presets.py` (jedes zeigt seinen Effekt).
 - **Mutationstest** vor dem ersten Commit (`tools/mutate_demo.py` der Website): 95 Stellen im Kern, erster Lauf 79 von 93 Mutanten von der ganzen Suite gefangen; die Überlebenden waren fehlende Randfälle (Monotonieprüfung am letzten Kriterium, n = 1 ohne Warnungen) und ein Fehler bei genau einem Kriterium (die 1 x 1-Korrelationsmatrix, behoben). Danach ist jede Stelle gefangen oder als äquivalent festgehalten (3: Schleifengrenzen der Gruppierung); Stand in `tests/mutation_state.json`.
 - **Oberfläche:** AppTest-Rauchtest (jeder Button, jeder Regler am Minimum und Maximum), alle Presets, jede Struktur, jeder Entscheider und jede Normierung, deaktivierte Regler, Permalink,
   PDF und Experimente erst nach Klick, Footer, Laufzeit-Importe.

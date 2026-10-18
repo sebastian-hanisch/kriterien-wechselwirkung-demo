@@ -266,7 +266,7 @@ def experiment_separate(rhos=C.EXP_CRITERION_RHOS, bundled: bool = True, seeds=C
 # ----------------------------------------------------------------------------- Experiment 3: wo die Summe nicht reicht
 
 def _best_additive_fit(N: np.ndarray, target: np.ndarray) -> np.ndarray:
-    """Kleinste Quadrate der Nutzen auf die Werte dieser Matrix (mit Absolutglied): die Obergrenze jeder gewichteten Summe für diese Alternativen."""
+    """Kleinste-Quadrate-Anpassung der Nutzen auf die Werte dieser Matrix (mit Absolutglied); keine Obergrenze für die Trefferquote einer gewichteten Summe."""
     X = np.hstack([N, np.ones((len(N), 1))])
     b = np.linalg.lstsq(X, target, rcond=None)[0]
     return N @ b[:-1]
@@ -350,7 +350,7 @@ def verdict_counting(counting: list[dict], loss: list[dict], infl: list[dict]) -
     g = _row(infl, structure="4-1-1", rho=0.0, method="gleich")["inflation"]
     return "warning", (f"Ein Aspekt zählt so oft, wie er Kriterien hat: Bei gleich großen Aspekten ist die Erhebung je Kriterium richtig ({'gleiche Trefferquote' if same else 'Abweichung'}), bei (4, 1, 1) "
                        f"fehlen {de(100 * lo, 1)} bis {de(100 * hi, 1)} Punkte Platz 1, und der große Aspekt ist {de(g, 2)}-fach gewichtet. Mit {top['k']} Kriterien im großen Aspekt "
-                       f"(Korrelation 0,9) sind es {de(100 * top['loss'], 1)} Punkte. Das ist keine Eigenschaft der Korrelation, sondern der Zahl der Kriterien je Aspekt.")
+                       f"(Korrelation 0,9) sind es {de(100 * top['loss'], 1)} Punkte. Die Aufblähung ist keine Eigenschaft der Korrelation, sondern der Zahl der Kriterien je Aspekt.")
 
 
 def verdict_data_driven(infl: list[dict], data: list[dict], bundled: list[dict]) -> tuple[str, str]:
@@ -360,11 +360,13 @@ def verdict_data_driven(infl: list[dict], data: list[dict], bundled: list[dict])
     k0 = _row(infl, structure="4-1-1", rho=0.0, method="cluster")["inflation"]
     cor = max(abs(r["critic_corr"]) for r in data), max(abs(r["entropy_corr"]) for r in data)
     spread = max(r["entropy_rank_range"] for r in data)
-    worst = min(_row(bundled, rho=rho, method="wahre_critic")["hit"] - _row(bundled, rho=rho, method="wahre")["hit"] for rho in C.EXP_CRITERION_RHOS)
+    cost = {rho: _row(bundled, rho=rho, method="wahre")["hit"] - _row(bundled, rho=rho, method="wahre_critic")["hit"] for rho in C.EXP_CRITERION_RHOS}
+    r0, r1, r2 = C.EXP_CRITERION_RHOS
     return "warning", (f"Bei Korrelation 0,9 holt CRITIC die Aufblähung des großen Aspekts nur von 2,00 auf {de(c9, 2)}, Entropie-Gewichte gar nicht ({de(e9, 2)}), die Gruppierung aus den Daten fast "
                        f"vollständig ({de(k9, 2)}), aber erst bei hoher Korrelation (bei 0: {de(k0, 2)}). Die Gewichte beider Verfahren hängen nicht an der Wichtigkeit (Korrelation höchstens "
                        f"{de(cor[0], 2)} bzw. {de(cor[1], 2)}; Entropie auf Rängen: Spannweite höchstens {de(spread, 4)}). Und Korrelation ist nicht Redundanz: Bewertet der Entscheider korrelierte Kriterien "
-                       f"einzeln und hoch, kostet der CRITIC-Faktor bis zu {de(-100 * worst, 1)} Punkte.")
+                       f"einzeln und hoch, kostet der CRITIC-Faktor bei Korrelation {de(r0, 1)} {de(100 * cost[r0], 1)} Punkte, bei {de(r1, 1)} und {de(r2, 1)} nur {de(100 * cost[r1], 1)} und "
+                       f"{de(100 * cost[r2], 1)} Punkte (im Rauschen).")
 
 
 def verdict_interaction(rows: list[dict]) -> tuple[str, str]:
@@ -374,7 +376,7 @@ def verdict_interaction(rows: list[dict]) -> tuple[str, str]:
     f1 = _row(rows, kind="min", lam=1.0, norm="minmax", method="falsch")["hit"]
     s1 = _row(rows, kind="min", lam=1.0, norm="minmax", method="summe")["hit"]
     same = _row(rows, kind="max", lam=0.5, norm="perzentil", method="choquet")["same_as_summe"]
-    return "warning", (f"Bei Redundanz (Maximum im Aspekt, Perzentil-Ränge) trifft die gewichtete Summe Platz 1 in {de(100 * r1, 1)} %, die beste additive Anpassung in {de(100 * a1, 1)} %, das Choquet-Integral "
+    return "warning", (f"Bei Redundanz (Maximum im Aspekt, Perzentil-Ränge) trifft die gewichtete Summe Platz 1 in {de(100 * r1, 1)} %, eine additive Kleinste-Quadrate-Anpassung in {de(100 * a1, 1)} %, das Choquet-Integral "
                        f"mit der richtigen Wechselwirkung in {de(100 * c1, 1)} %; bei halber Stärke stimmt Platz 1 der Summe nur in {de(100 * same, 0)} % mit dem Choquet überein. Mit falschem "
                        f"Vorzeichen (Synergie, Maximum statt Minimum) trifft das Choquet-Integral nur in {de(100 * f1, 1)} % gegen {de(100 * s1, 1)} % der Summe.")
 
